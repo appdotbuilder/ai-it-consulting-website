@@ -1,8 +1,19 @@
+import { db } from '../db';
+import { servicesTable } from '../db/schema';
 import { type Service } from '../schema';
+import { eq, asc } from 'drizzle-orm';
 
-export async function getActiveServices(): Promise<Service[]> {
-    // This is a placeholder declaration! Real code should be implemented here.
-    // The goal of this handler is fetching all active services from the database.
-    // Should filter by is_active=true and order by display_order asc.
-    return [];
-}
+export const getActiveServices = async (): Promise<Service[]> => {
+  try {
+    const result = await db.select()
+      .from(servicesTable)
+      .where(eq(servicesTable.is_active, true))
+      .orderBy(asc(servicesTable.display_order))
+      .execute();
+
+    return result;
+  } catch (error) {
+    console.error('Failed to fetch active services:', error);
+    throw error;
+  }
+};

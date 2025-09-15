@@ -1,8 +1,18 @@
+import { db } from '../db';
+import { caseStudiesTable } from '../db/schema';
 import { type CaseStudy } from '../schema';
+import { desc } from 'drizzle-orm';
 
-export async function getAllCaseStudies(): Promise<CaseStudy[]> {
-    // This is a placeholder declaration! Real code should be implemented here.
-    // The goal of this handler is fetching all case studies from the database.
-    // Should order by created_at desc for latest first.
-    return [];
-}
+export const getAllCaseStudies = async (): Promise<CaseStudy[]> => {
+  try {
+    const result = await db.select()
+      .from(caseStudiesTable)
+      .orderBy(desc(caseStudiesTable.created_at))
+      .execute();
+
+    return result;
+  } catch (error) {
+    console.error('Failed to fetch case studies:', error);
+    throw error;
+  }
+};

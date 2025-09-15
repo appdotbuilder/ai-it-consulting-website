@@ -1,8 +1,18 @@
+import { db } from '../db';
+import { contactFormsTable } from '../db/schema';
+import { desc } from 'drizzle-orm';
 import { type ContactForm } from '../schema';
 
-export async function getContactForms(): Promise<ContactForm[]> {
-    // This is a placeholder declaration! Real code should be implemented here.
-    // The goal of this handler is fetching all contact form submissions from the database.
-    // This would be used for admin dashboard to view all contact submissions.
-    return [];
-}
+export const getContactForms = async (): Promise<ContactForm[]> => {
+  try {
+    const results = await db.select()
+      .from(contactFormsTable)
+      .orderBy(desc(contactFormsTable.created_at))
+      .execute();
+
+    return results;
+  } catch (error) {
+    console.error('Failed to fetch contact forms:', error);
+    throw error;
+  }
+};

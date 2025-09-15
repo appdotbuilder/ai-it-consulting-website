@@ -1,8 +1,19 @@
+import { db } from '../db';
+import { caseStudiesTable } from '../db/schema';
 import { type CaseStudy } from '../schema';
+import { eq, desc } from 'drizzle-orm';
 
-export async function getFeaturedCaseStudies(): Promise<CaseStudy[]> {
-    // This is a placeholder declaration! Real code should be implemented here.
-    // The goal of this handler is fetching all featured case studies from the database.
-    // Should filter by is_featured=true and order by created_at desc.
-    return [];
-}
+export const getFeaturedCaseStudies = async (): Promise<CaseStudy[]> => {
+  try {
+    const result = await db.select()
+      .from(caseStudiesTable)
+      .where(eq(caseStudiesTable.is_featured, true))
+      .orderBy(desc(caseStudiesTable.created_at))
+      .execute();
+
+    return result;
+  } catch (error) {
+    console.error('Failed to fetch featured case studies:', error);
+    throw error;
+  }
+};

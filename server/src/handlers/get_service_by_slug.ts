@@ -1,8 +1,26 @@
+import { db } from '../db';
+import { servicesTable } from '../db/schema';
 import { type Service } from '../schema';
+import { eq, and } from 'drizzle-orm';
 
-export async function getServiceBySlug(slug: string): Promise<Service | null> {
-    // This is a placeholder declaration! Real code should be implemented here.
-    // The goal of this handler is fetching a single active service by its slug.
-    // Should return null if not found or not active.
-    return null;
-}
+export const getServiceBySlug = async (slug: string): Promise<Service | null> => {
+  try {
+    const result = await db.select()
+      .from(servicesTable)
+      .where(and(
+        eq(servicesTable.slug, slug),
+        eq(servicesTable.is_active, true)
+      ))
+      .limit(1)
+      .execute();
+
+    if (result.length === 0) {
+      return null;
+    }
+
+    return result[0];
+  } catch (error) {
+    console.error('Failed to fetch service by slug:', error);
+    throw error;
+  }
+};
