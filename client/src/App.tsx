@@ -6,13 +6,15 @@ import { HomePage } from '@/components/HomePage';
 import { AboutPage } from '@/components/AboutPage';
 import { ServicesPage } from '@/components/ServicesPage';
 import { CaseStudiesPage } from '@/components/CaseStudiesPage';
+import { CaseStudyDetailPage } from '@/components/CaseStudyDetailPage';
 import { BlogPage } from '@/components/BlogPage';
 import { ContactPage } from '@/components/ContactPage';
 
-type Page = 'home' | 'about' | 'services' | 'case-studies' | 'blog' | 'contact';
+type Page = 'home' | 'about' | 'services' | 'case-studies' | 'case-study-detail' | 'blog' | 'contact';
 
 function App() {
   const [currentPage, setCurrentPage] = useState<Page>('home');
+  const [selectedCaseStudySlug, setSelectedCaseStudySlug] = useState<string | null>(null);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -40,8 +42,13 @@ function App() {
     }
   };
 
-  const navigateToPage = (page: Page) => {
+  const navigateToPage = (page: Page, slug?: string) => {
     setCurrentPage(page);
+    if (page === 'case-study-detail' && slug) {
+      setSelectedCaseStudySlug(slug);
+    } else {
+      setSelectedCaseStudySlug(null);
+    }
     setIsMobileMenuOpen(false);
     // Scroll to top when navigating
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -56,7 +63,13 @@ function App() {
       case 'services':
         return <ServicesPage />;
       case 'case-studies':
-        return <CaseStudiesPage />;
+        return <CaseStudiesPage onNavigate={navigateToPage} />;
+      case 'case-study-detail':
+        return selectedCaseStudySlug ? (
+          <CaseStudyDetailPage slug={selectedCaseStudySlug} onNavigate={navigateToPage} />
+        ) : (
+          <CaseStudiesPage onNavigate={navigateToPage} />
+        );
       case 'blog':
         return <BlogPage />;
       case 'contact':

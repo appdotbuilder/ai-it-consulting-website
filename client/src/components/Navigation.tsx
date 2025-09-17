@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Moon, Sun, Menu, X } from 'lucide-react';
 
-type Page = 'home' | 'about' | 'services' | 'case-studies' | 'blog' | 'contact';
+type Page = 'home' | 'about' | 'services' | 'case-studies' | 'case-study-detail' | 'blog' | 'contact';
 
 interface NavigationProps {
   currentPage: Page;

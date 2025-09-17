@@ -1,6 +1,7 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { 
   ArrowRight, 
   TrendingUp, 
@@ -10,40 +11,143 @@ import {
   CheckCircle,
   ExternalLink
 } from 'lucide-react';
+import { trpc } from '@/utils/trpc';
+import { useState, useEffect } from 'react';
+import type { CaseStudy } from '../../../server/src/schema';
 
-export function CaseStudiesPage() {
-  const caseStudies = [
+interface CaseStudiesPageProps {
+  onNavigate: (page: 'home' | 'about' | 'services' | 'case-studies' | 'case-study-detail' | 'blog' | 'contact', slug?: string) => void;
+}
+
+export function CaseStudiesPage({ onNavigate }: CaseStudiesPageProps) {
+  const [caseStudies, setCaseStudies] = useState<CaseStudy[] | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    const loadCaseStudies = async () => {
+      try {
+        setIsLoading(true);
+        const data = await trpc.getAllCaseStudies.query();
+        setCaseStudies(data);
+      } catch (err) {
+        setError(err as Error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadCaseStudies();
+  }, []);
+
+  const staticCaseStudies = [
     {
       id: 1,
       title: 'Retail AI Revolution: Inventory Optimization System',
+      slug: 'retail-ai-inventory-optimization',
       client_name: 'RetailMax Corp',
       industry: 'Retail',
       problem_description: 'RetailMax Corp was struggling with inventory management across 200+ stores, leading to stockouts, overstocking, and $2M+ in lost revenue annually.',
       solution_description: 'We implemented an AI-powered inventory optimization system using machine learning algorithms to predict demand patterns, seasonal trends, and customer behavior.',
       results_description: '40% reduction in stockouts, 25% decrease in excess inventory, $1.8M cost savings in the first year, and 60% improvement in forecast accuracy.',
-      technologies_used: ['Python', 'TensorFlow', 'AWS', 'PostgreSQL', 'REST APIs']
+      image_url: null,
+      technologies_used: ['Python', 'TensorFlow', 'AWS', 'PostgreSQL', 'REST APIs'],
+      is_featured: true,
+      created_at: new Date('2024-01-15'),
+      updated_at: new Date('2024-01-15')
     },
     {
       id: 2,
       title: 'Healthcare AI: Patient Flow Optimization',
+      slug: 'healthcare-ai-patient-flow',
       client_name: 'MedCenter Hospital',
       industry: 'Healthcare',
       problem_description: 'MedCenter Hospital faced challenges with patient flow management, leading to long wait times, resource bottlenecks, and decreased patient satisfaction scores.',
       solution_description: 'We developed an AI-driven patient flow optimization system that predicts patient admission patterns, optimizes bed allocation, and streamlines discharge processes.',
       results_description: '35% reduction in average wait times, 20% increase in patient satisfaction scores, improved resource utilization by 30%, and enhanced staff efficiency.',
-      technologies_used: ['Python', 'scikit-learn', 'Azure', 'MongoDB', 'Power BI']
+      image_url: null,
+      technologies_used: ['Python', 'scikit-learn', 'Azure', 'MongoDB', 'Power BI'],
+      is_featured: false,
+      created_at: new Date('2024-02-10'),
+      updated_at: new Date('2024-02-10')
     },
     {
       id: 3,
       title: 'Manufacturing AI: Predictive Maintenance System',
+      slug: 'manufacturing-ai-predictive-maintenance',
       client_name: 'IndustrialTech Manufacturing',
       industry: 'Manufacturing',
       problem_description: 'IndustrialTech experienced frequent unexpected equipment failures, resulting in costly downtime, emergency repairs, and production delays.',
       solution_description: 'We implemented a comprehensive predictive maintenance solution using IoT sensors, machine learning models, and real-time analytics to predict equipment failures.',
       results_description: '50% reduction in unplanned downtime, 30% decrease in maintenance costs, 95% accuracy in failure prediction, and improved overall equipment effectiveness by 25%.',
-      technologies_used: ['Python', 'PyTorch', 'Apache Kafka', 'InfluxDB', 'Grafana']
+      image_url: null,
+      technologies_used: ['Python', 'PyTorch', 'Apache Kafka', 'InfluxDB', 'Grafana'],
+      is_featured: true,
+      created_at: new Date('2024-03-05'),
+      updated_at: new Date('2024-03-05')
     }
   ];
+
+  // If loading, show skeleton loader
+  if (isLoading) {
+    return (
+      <div className="min-h-screen pt-16">
+        {/* Hero Section */}
+        <section className="py-20 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 via-purple-600/10 to-pink-600/10 dark:from-blue-600/20 dark:via-purple-600/20 dark:to-pink-600/20"></div>
+          
+          <div className="container mx-auto px-4 relative">
+            <div className="max-w-4xl mx-auto text-center">
+              <Badge className="mb-6 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 text-blue-700 dark:text-blue-300 border-0">
+                Case Studies
+              </Badge>
+              <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-slate-900 via-blue-800 to-purple-800 dark:from-slate-100 dark:via-blue-300 dark:to-purple-300 bg-clip-text text-transparent">
+                Real Results from Real Clients
+              </h1>
+              <p className="text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto leading-relaxed">
+                Discover how we've helped businesses across various industries transform their operations with AI-driven solutions and achieve measurable results.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Loading Skeletons */}
+        <section className="py-20">
+          <div className="container mx-auto px-4">
+            <div className="space-y-16">
+              {[1, 2, 3].map((index) => (
+                <Card key={index} className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-0 shadow-xl overflow-hidden">
+                  <CardContent className="p-0">
+                    <div className="grid lg:grid-cols-2 gap-0">
+                      <div className="p-8 lg:p-12">
+                        <Skeleton className="h-6 w-20 mb-4" />
+                        <Skeleton className="h-8 w-3/4 mb-4" />
+                        <Skeleton className="h-6 w-1/2 mb-6" />
+                        <div className="space-y-4">
+                          <Skeleton className="h-4 w-full" />
+                          <Skeleton className="h-4 w-full" />
+                          <Skeleton className="h-4 w-3/4" />
+                        </div>
+                        <Skeleton className="h-10 w-40 mt-8" />
+                      </div>
+                      <div className="bg-gradient-to-br from-blue-500 to-purple-600 h-64 lg:h-full">
+                        <div className="h-full flex items-center justify-center">
+                          <Skeleton className="h-24 w-24 rounded-full bg-white/20" />
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
+      </div>
+    );
+  }
+
+  // If error or no data, fall back to static data
+  const displayCaseStudies = error || !caseStudies ? staticCaseStudies : caseStudies;
 
   const metrics = [
     {
@@ -126,7 +230,7 @@ export function CaseStudiesPage() {
       <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="space-y-16">
-            {caseStudies.map((study, index) => {
+            {displayCaseStudies.map((study, index) => {
               const isEven = index % 2 === 0;
               
               return (
@@ -200,7 +304,10 @@ export function CaseStudiesPage() {
                           </div>
                         </div>
 
-                        <Button className="w-fit bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">
+                        <Button 
+                          className="w-fit bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
+                          onClick={() => onNavigate('case-study-detail', study.slug)}
+                        >
                           View Full Case Study
                           <ExternalLink className="ml-2 h-4 w-4" />
                         </Button>
