@@ -10,7 +10,10 @@ export const getAllCaseStudies = async (): Promise<CaseStudy[]> => {
       .orderBy(desc(caseStudiesTable.created_at))
       .execute();
 
-    return result;
+    return result.map(caseStudy => ({
+      ...caseStudy,
+      technologies_used: caseStudy.technologies_used as string[] // JSON field type assertion
+    }));
   } catch (error) {
     console.error('Failed to fetch case studies:', error);
     throw error;

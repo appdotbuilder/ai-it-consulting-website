@@ -28,6 +28,7 @@ import { getFeaturedCaseStudies } from './handlers/get_featured_case_studies';
 import { getAllCaseStudies } from './handlers/get_all_case_studies';
 import { getCaseStudyBySlug } from './handlers/get_case_study_by_slug';
 import { createCaseStudy } from './handlers/create_case_study';
+import { seedCaseStudies } from './handlers/seed_case_studies';
 import { getActiveServices } from './handlers/get_active_services';
 import { getServiceBySlug } from './handlers/get_service_by_slug';
 import { createService } from './handlers/create_service';
@@ -90,6 +91,9 @@ const appRouter = router({
   createCaseStudy: publicProcedure
     .input(createCaseStudyInputSchema)
     .mutation(({ input }) => createCaseStudy(input)),
+
+  seedCaseStudies: publicProcedure
+    .mutation(() => seedCaseStudies()),
 
   // Service routes
   getActiveServices: publicProcedure
