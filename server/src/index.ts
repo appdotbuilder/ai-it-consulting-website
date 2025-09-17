@@ -34,6 +34,7 @@ import { getServiceBySlug } from './handlers/get_service_by_slug';
 import { createService } from './handlers/create_service';
 import { getActiveTeamMembers } from './handlers/get_active_team_members';
 import { createTeamMember } from './handlers/create_team_member';
+import { checkAndSeedCaseStudies } from './handlers/check_and_seed_case_studies';
 
 const t = initTRPC.create({
   transformer: superjson,
@@ -120,6 +121,10 @@ export type AppRouter = typeof appRouter;
 
 async function start() {
   const port = process.env['SERVER_PORT'] || 2022;
+  
+  // Initialize case studies data if table is empty
+  await checkAndSeedCaseStudies();
+  
   const server = createHTTPServer({
     middleware: (req, res, next) => {
       cors()(req, res, next);
